@@ -1,5 +1,9 @@
 # Ludo Supreme - Authentic Indian Board Game
 
+<p align="center">
+  <img src="docs/logo.png" width="180" alt="Ludo Supreme Game Logo" style="border-radius: 36px;" />
+</p>
+
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84.svg?style=flat&logo=android)](https://www.android.com/)
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin_2.0-7F52FF.svg?style=flat&logo=kotlin)](https://kotlinlang.org/)
 [![Compose](https://img.shields.io/badge/UI-Jetpack_Compose-4285F4.svg?style=flat&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
