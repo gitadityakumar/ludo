@@ -85,6 +85,8 @@ fun GameButton(
     style: GameButtonStyle = GameButtonStyle.GOLD,
     fontSize: Int = 16,
     height: Dp = 48.dp,
+    horizontalPadding: Dp = 10.dp,
+    cornerRadius: Dp = 10.dp,
     enabled: Boolean = true,
     isSelected: Boolean = false,
     leadingIcon: (@Composable () -> Unit)? = null
@@ -95,7 +97,6 @@ fun GameButton(
     val colors = getGameButtonColors(style)
     val pressOffset = if (isPressed) 3.dp else 0.dp
     val bevelDepth = 4.dp
-    val cornerRadius = 14.dp
 
     Box(
         modifier = modifier
@@ -135,7 +136,7 @@ fun GameButton(
                     color = if (isSelected) Color.White else colors.border,
                     shape = RoundedCornerShape(cornerRadius)
                 )
-                .padding(horizontal = 14.dp),
+                .padding(horizontal = horizontalPadding),
             contentAlignment = Alignment.Center
         ) {
             Row(
@@ -152,8 +153,10 @@ fun GameButton(
                     fontSize = fontSize.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = colors.textColor,
-                    letterSpacing = 0.8.sp,
-                    textAlign = TextAlign.Center
+                    letterSpacing = 0.5.sp,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    softWrap = false
                 )
             }
         }

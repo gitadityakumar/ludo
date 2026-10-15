@@ -36,15 +36,16 @@ fun MainMenuScreen(
     onStartGame: (playerCount: Int, botCount: Int) -> Unit
 ) {
     var playerCount by remember { mutableIntStateOf(2) }
-    var botCount by remember { mutableIntStateOf(1) }
+    var isVsAiMode by remember { mutableStateOf(true) }
 
-    // Ensure botCount does not exceed playerCount - 1
-    if (botCount >= playerCount) {
-        botCount = playerCount - 1
-    }
+    val botCount = if (isVsAiMode) playerCount - 1 else 0
+    val humanCount = playerCount - botCount
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding(),
         contentAlignment = Alignment.Center
     ) {
         // Authentic Game Felt Background
@@ -82,7 +83,7 @@ fun MainMenuScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 24.dp, vertical = 20.dp),
+                        .padding(horizontal = 20.dp, vertical = 20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -99,16 +100,18 @@ fun MainMenuScreen(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
-                                VectorDiceIcon(size = if (isLandscape) 28.dp else 26.dp)
+                                VectorDiceIcon(size = if (isLandscape) 26.dp else 22.dp)
                                 Text(
                                     text = "LUDO SUPREME",
-                                    fontSize = if (isLandscape) 26.sp else 28.sp,
+                                    fontSize = if (isLandscape) 24.sp else 21.sp,
                                     fontWeight = FontWeight.Black,
-                                    letterSpacing = 1.2.sp,
+                                    letterSpacing = 1.1.sp,
                                     color = Color(0xFFFFEA00),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 1,
+                                    softWrap = false
                                 )
                             }
                         }
@@ -175,14 +178,13 @@ fun MainMenuScreen(
                                 Box(modifier = Modifier.weight(1f)) {
                                     GameButton(
                                         text = "$count Players",
-                                        onClick = {
-                                            playerCount = count
-                                            if (botCount >= count) botCount = count - 1
-                                        },
+                                        onClick = { playerCount = count },
                                         style = if (isSelected) GameButtonStyle.GOLD else GameButtonStyle.DARK,
                                         isSelected = isSelected,
-                                        fontSize = 13,
-                                        height = 42.dp
+                                        fontSize = 12,
+                                        height = 46.dp,
+                                        cornerRadius = 10.dp,
+                                        horizontalPadding = 4.dp
                                     )
                                 }
                             }
@@ -194,9 +196,9 @@ fun MainMenuScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        val humanCount = playerCount - botCount
+                        val botSuffix = if (botCount == 1) "Bot" else "Bots"
                         Text(
-                            text = "GAME MODE ($humanCount Human vs $botCount Bot)",
+                            text = "GAME MODE ($humanCount Human vs $botCount $botSuffix)",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 1.sp,
@@ -207,27 +209,27 @@ fun MainMenuScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            val isPassAndPlay = botCount == 0
                             Box(modifier = Modifier.weight(1f)) {
                                 GameButton(
                                     text = "Pass & Play",
-                                    onClick = { botCount = 0 },
-                                    style = if (isPassAndPlay) GameButtonStyle.BLUE else GameButtonStyle.DARK,
-                                    isSelected = isPassAndPlay,
+                                    onClick = { isVsAiMode = false },
+                                    style = if (!isVsAiMode) GameButtonStyle.BLUE else GameButtonStyle.DARK,
+                                    isSelected = !isVsAiMode,
                                     fontSize = 13,
-                                    height = 42.dp
+                                    height = 46.dp,
+                                    cornerRadius = 10.dp
                                 )
                             }
 
-                            val isVsAi = botCount == playerCount - 1
                             Box(modifier = Modifier.weight(1f)) {
                                 GameButton(
                                     text = "vs AI Bots",
-                                    onClick = { botCount = playerCount - 1 },
-                                    style = if (isVsAi) GameButtonStyle.BLUE else GameButtonStyle.DARK,
-                                    isSelected = isVsAi,
+                                    onClick = { isVsAiMode = true },
+                                    style = if (isVsAiMode) GameButtonStyle.BLUE else GameButtonStyle.DARK,
+                                    isSelected = isVsAiMode,
                                     fontSize = 13,
-                                    height = 42.dp
+                                    height = 46.dp,
+                                    cornerRadius = 10.dp
                                 )
                             }
                         }
