@@ -12,3 +12,5 @@ build/
 .cxx
 *.mp4
 *.hprof
+*.keystore
+*.jks

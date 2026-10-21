@@ -4,11 +4,25 @@ plugins {
   alias(libs.plugins.kotlin.serialization)
 }
 
+import java.util.Properties
+
+val localProps = Properties().apply {
+    val localPropsFile = rootProject.file("local.properties")
+    if (localPropsFile.exists()) {
+        localPropsFile.inputStream().use { load(it) }
+    }
+}
+
+fun getSigningSecret(envName: String, propName: String): String? {
+    return providers.environmentVariable(envName).orNull
+        ?: localProps.getProperty(propName)
+}
+
 android {
     namespace = "com.example.ludo"
     compileSdk = 36
     defaultConfig {
-        applicationId = "com.example.ludo"
+        applicationId = "com.adi100x.ludo"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -17,10 +31,16 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("release.keystore")
-            storePassword = "ludosupremepass"
-            keyAlias = "ludosupreme"
-            keyPassword = "ludosupremepass"
+            val keystorePath = getSigningSecret("KEYSTORE_PATH", "RELEASE_STORE_FILE") ?: "release.keystore"
+            val keystoreFile = file(keystorePath)
+            if (keystoreFile.exists()) {
+                storeFile = keystoreFile
+            }
+            storePassword = getSigningSecret("KEYSTORE_PASSWORD", "RELEASE_STORE_PASSWORD")
+            keyAlias = getSigningSecret("KEY_ALIAS", "RELEASE_KEY_ALIAS")
+            keyPassword = getSigningSecret("KEY_PASSWORD", "RELEASE_KEY_PASSWORD")
+            enableV1Signing = true
+            enableV2Signing = true
         }
     }
 

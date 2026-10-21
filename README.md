@@ -58,6 +58,34 @@ adb shell am start -n com.example.ludo/.MainActivity
 
 ---
 
+## Publishing to GitHub
+
+A GitHub Actions workflow is configured in [`.github/workflows/release.yml`](.github/workflows/release.yml) to automatically compile signed production builds (`.apk` and `.aab`) and publish them to GitHub Releases.
+
+### Required GitHub Secrets
+Before running the release workflow, add the following secrets in your GitHub repository (**Settings > Secrets and variables > Actions > New repository secret**):
+
+| Secret Name | Value Description |
+|---|---|
+| `KEYSTORE_BASE64` | Base64-encoded keystore: `base64 -w 0 app/release.keystore` |
+| `KEYSTORE_PASSWORD` | Password for the keystore |
+| `KEY_ALIAS` | Alias name for the signing key |
+| `KEY_PASSWORD` | Password for the signing key |
+
+### Option 1: Publish via Git Tag (Recommended)
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+This triggers the workflow to automatically build the release and create a GitHub Release tagged `v1.0.0` with the download assets attached.
+
+### Option 2: Publish Manually via GitHub UI
+1. Navigate to the **Actions** tab on your GitHub repository.
+2. Select **Publish Production App** from the left sidebar.
+3. Click **Run workflow**, specify the desired tag name (e.g. `v1.0.0`), and run.
+
+---
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
