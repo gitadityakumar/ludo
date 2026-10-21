@@ -55,11 +55,25 @@ jobs:
 
       - name: Configure Keystore from GitHub Secrets
         run: |
-          if [ -z "$KEYSTORE_BASE64" ]; then
-            echo "::error::KEYSTORE_BASE64 secret is missing! Please configure KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, and KEY_PASSWORD in your GitHub repository secrets."
-            exit 1
-          fi
-          echo "$KEYSTORE_BASE64" | base64 -d > app/release.keystore
+          python3 -c '
+          import base64, os, sys
+          b64 = os.environ.get("KEYSTORE_BASE64", "").strip()
+          if not b64:
+              sys.exit("::error::KEYSTORE_BASE64 secret is missing! Please configure KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, and KEY_PASSWORD in your GitHub repository secrets.")
+          # Strip any accidental wrapping quotes
+          if (b64.startswith("\"") and b64.endswith("\"")) or (b64.startswith("\x27") and b64.endswith("\x27")):
+              b64 = b64[1:-1].strip()
+          if b64.startswith("base64 ") or "release.keystore" in b64:
+              sys.exit("::error::It looks like you pasted the command \"base64 -w 0 app/release.keystore\" into KEYSTORE_BASE64 instead of its output text! Please copy the generated base64 string.")
+          try:
+              decoded = base64.b64decode(b64)
+              os.makedirs("app", exist_ok=True)
+              with open("app/release.keystore", "wb") as f:
+                  f.write(decoded)
+              print(f"Keystore successfully configured ({len(decoded)} bytes)")
+          except Exception as e:
+              sys.exit(f"::error::Failed to decode KEYSTORE_BASE64: {e}. Please ensure the entire base64 string was copied.")
+          '
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
